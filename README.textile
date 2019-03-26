@@ -1,0 +1,9 @@
+h1. The Clock Divider
+
+This is a patch for an Arduino UNO to divide an input audio rate (48kHz) clock to a movement rate (120Hz) clock. It is a relative straightforward patch that uses interrupts.
+
+It does, however, not use the relatively slow @digitalWrite()@ but direct register manipulation  "as documented here":https://www.instructables.com/id/Fast-digitalRead-digitalWrite-for-Arduino/. This also means that it is not usable on different Arduino's.
+
+h2. Credits
+
+Developed by Joren Six at IPEM, University Ghent for the "ASIL lab":https://www.ugent.be/lw/kunstwetenschappen/en/research-groups/musicology/ipem/artsciencelab-ipem of "de Krook":https://dekrook.be/.
