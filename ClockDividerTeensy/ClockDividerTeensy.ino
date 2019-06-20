@@ -16,8 +16,8 @@
 const int MAX_COUNTER = 400;//divider
 const int HALF_COUNTER = 200;//when to set the signal to low
 
-const int MAX_PERIOD_MICROS = 8333+133;//118.1Hz
-const int MIN_PERIOD_MICROS = 8333-133;//121.9Hz
+const int MAX_PERIOD_MICROS = 8333+8;//
+const int MIN_PERIOD_MICROS = 8333-8;//
 
 //print debug statements
 const boolean debug_output = true;
@@ -49,6 +49,7 @@ unsigned long prev_time_in_microseconds;
 
 const int max_nr_of_deltas = 240;
 unsigned long deltas_in_micros[240];
+
 int deltas_index = 0;
 int print_counter = 0;
 
@@ -99,7 +100,6 @@ void loop() {
 
         unsigned long max_delta = 0;
         unsigned long min_delta = 160000;
-        
         for(int i = 0 ; i < max_nr_of_deltas ; i++){
           max_delta = max(max_delta,deltas_in_micros[i]);
           min_delta = min(min_delta,deltas_in_micros[i]);
@@ -152,10 +152,7 @@ void increment() {
   //check if the counter reached the max
   if(counter == MAX_COUNTER){
     // Set the output pin to HIGH
-    // Set digital port 3 as quickly as possible
-    // So do not use digitalWrite but direct register manupilation
-    // otherwise it adds a couple of us.
-    PORTD |= _BV(PD3);
+   digitalWrite(out_pin,HIGH);
 
     //reset the counter
     counter = 0;
@@ -167,12 +164,7 @@ void increment() {
   } else if(counter == HALF_COUNTER){
     // Set the output port to low,
     // 
-    // The output is set to high when 400 is reached, it is set to low
-    // if the counter reaches 200 so half of the period is high, half is low.
-    // Do not use slow digitalWrite() but fast register switching.
-    // This means that this code is device DEPENDENT. 
-    // Do not use on leonardo or any other Arduino, only on DUEMILLANOVA!
-    PORTD &= ~_BV(PD3);
+    digitalWrite(out_pin,LOW);
   }
 
   //increment the counter

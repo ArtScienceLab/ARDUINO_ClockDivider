@@ -4,6 +4,39 @@ This is a patch for an Arduino UNO to divide an input audio rate (48kHz) clock t
 
 It does, however, not use the relatively slow @digitalWrite()@ but direct register manipulation  "as documented here":https://www.instructables.com/id/Fast-digitalRead-digitalWrite-for-Arduino/. This also means that it is not usable on different Arduino's.
 
+h2. Teensy
+
+Since the incoming audio clock rate is 48kHz each period is 20.8333 microseconds. We expect that each interrupt is correctly handled registered. The margin of error is a bit less then half this period so about 8 microseconds. However when measuring the Arduino (using the internal pullup resistors) we see the following:
+
+<pre>
+10:30:52.763 -> min 8168µ, max 8340µ, diff 172µ, current 8312µ
+10:30:53.777 -> min 8168µ, max 8340µ, diff 172µ, current 8312µ
+10:30:54.757 -> min 8168µ, max 8336µ, diff 168µ, current 8332µ
+10:30:55.752 -> min 8124µ, max 8340µ, diff 216µ, current 8272µ
+10:30:56.734 -> min 8124µ, max 8340µ, diff 216µ, current 8332µ
+10:30:57.736 -> min 8168µ, max 8336µ, diff 168µ, current 8248µ
+10:30:58.716 -> min 8168µ, max 8340µ, diff 172µ, current 8312µ
+</pre>
+
+Measurement is done for the last 240 measurements and the minimum and maximum period for 400 periods is reported every second. The difference between minimum and maximum should be zero the period should be 20.83333 * 400 = 8333.3333 microseconds. The difference should be less than 20 microseconds otherwise audio samples have been skipped (as is the case here).
+
+Using an other microcontroller running very similar code (a Teensy) the measurement starts to look better:
+
+<pre>
+13:49:05.503 -> min 8331µ, max 8336µ, diff 5µ, current 8334µ
+13:49:05.503 -> min 8331µ, max 8336µ, diff 5µ, current 8334µ
+13:49:05.503 -> min 8331µ, max 8336µ, diff 5µ, current 8332µ
+13:49:05.503 -> min 8330µ, max 8337µ, diff 7µ, current 8332µ
+13:49:05.503 -> min 8330µ, max 8337µ, diff 7µ, current 8334µ
+13:49:05.503 -> min 8331µ, max 8335µ, diff 4µ, current 8333µ
+13:49:05.961 -> min 8331µ, max 8336µ, diff 5µ, current 8333µ
+13:49:06.946 -> min 8331µ, max 8336µ, diff 5µ, current 8333µ
+13:49:07.945 -> min 8331µ, max 8336µ, diff 5µ, current 8334µ
+13:49:08.954 -> min 8331µ, max 8336µ, diff 5µ, current 8334µ
+</pre>
+
+
+
 h2. Credits
 
 Developed by Joren Six at IPEM, University Ghent for the "ASIL lab":https://www.ugent.be/lw/kunstwetenschappen/en/research-groups/musicology/ipem/artsciencelab-ipem of "de Krook":https://dekrook.be/.
